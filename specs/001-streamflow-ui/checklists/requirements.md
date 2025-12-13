@@ -6,14 +6,14 @@
 
 ## Content Quality
 
-- [ ] No implementation details (languages, frameworks, APIs)  # FAIL: spec includes backend API endpoints in Assumptions
+- [x] No implementation details (languages, frameworks, APIs)
 - [x] Focused on user value and business needs
 - [x] Written for non-technical stakeholders
 - [x] All mandatory sections completed
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain  # FAIL: Q1, Q2, Q3 present in spec
+- [x] No [NEEDS CLARIFICATION] markers remain
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -27,15 +27,15 @@
 - [x] All functional requirements have clear acceptance criteria
 - [x] User scenarios cover primary flows
 - [x] Feature meets measurable outcomes defined in Success Criteria
-- [ ] No implementation details leak into specification  # FAIL: Assumptions lists API endpoints
+- [x] No implementation details leak into specification
 
 ## Notes
 
-- Failing items require updates before `/speckit.plan`.
-- Quotes from spec for failing items:
+- Resolved items:
+  - Q1: Run identifiers are provided by the backend and used directly by the frontend.
+  - Q2: Frontend does not handle long-term result storage or retention concerns.
+  - Q3: Frontend will use websocket or SSE for job updates; fallback to polling if unavailable.
 
-Assumptions (spec):
-> Backend API endpoints exist for: POST /jobs (create), GET /jobs/{id}/status, GET /results/{id}
-
-Open Questions (spec): Q1, Q2, Q3 are present and require choices from the user.
+- The spec avoids explicit API path strings to keep the document focused on WHAT and WHY.
+- Ready for `/speckit.plan` when the team confirms backend API semantics and retention policy.
 

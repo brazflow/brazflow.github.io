@@ -3,7 +3,7 @@
 **Feature Branch**: `001-streamflow-ui`  
 **Created**: 2025-12-13  
 **Status**: Draft  
-**Input**: User description: "build an app that can easilier simulate streamflow given just a point, or shapefile. The calculation are made in a backend and we need just to present the data. A example page is @app_v2.py. Allow user to acess old runs using a identification."
+**Input**: User description: "build an app that can easilier simulate streamflow given just a point, or shapefile. The calculation are made in a backend and we need just to present the data. A example page is @app_v2.py. Allow user to acess old runs using an identification."
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -70,16 +70,17 @@ A user wants to access previously-run simulations using an identifier (ID) to vi
 
 *Assumptions*:
 
-- Backend performs all computations and exposes REST endpoints to create jobs, poll status, and fetch results by run ID.
-- Result payloads include URLs to downloadable artifacts and data suitable for charting (JSON time series).
-- No user authentication required for initial MVP; access control handled server-side.
+- Backend performs all computations and exposes endpoints for job creation, status polling, and result retrieval; the frontend will use the run identifiers supplied by the backend and will not persist result data locally.
+- Result payloads include URLs or inline JSON for downloadable artifacts and time series data suitable for charting.
+- The frontend will connect to the backend using websocket or Server-Sent Events (SSE) to receive job status updates for long-running jobs.
+- No user authentication required for the MVP; access control is handled server-side.
 
 ### Key Entities *(include if feature involves data)*
 
 - **Run**: Represents a single simulation execution. Attributes: run_id, created_at, status, input_type (point|shapefile), parameters, result_urls.
 - **PointInput**: latitude, longitude, label
 - **ShapefileInput**: filename, size, checksum, feature_count
-- **ResultPackage**: time_series_url, summary_stats, download_url
+- **ResultPackage**: time_series (array), summary_stats, download_url
 
 ## Success Criteria *(mandatory)*
 
@@ -95,27 +96,18 @@ A user wants to access previously-run simulations using an identifier (ID) to vi
 
 - UI pages/components: Quick run (point input), Shapefile upload & job submission, Results/Run details page with charts and downloads, Run lookup by ID.
 - Client-side validation and user feedback flows (progress, errors, retries).
-- Integration with backend job API endpoints for create/poll/fetch results.
+- Integration with backend job API endpoints for create/poll/fetch results (frontend uses abstraction; no endpoint paths are required here).
 - Spec quality checklist at specs/001-streamflow-ui/checklists/requirements.md
 
 ## Assumptions
 
-- Backend API endpoints exist for: POST /jobs (create), GET /jobs/{id}/status, GET /results/{id}
-- Result payloads include URLs to downloadable artifacts and data suitable for charting (JSON time series).
-- No user authentication required for initial MVP; access control handled server-side.
+- Backend supplies run identifiers and maintains result storage; the frontend relies on backend-provided IDs and result URLs.
+- Result payloads include URLs or JSON suitable for chart rendering.
+- Frontend uses websocket/SSE for job updates; polling is acceptable only when websocket/SSE is unavailable.
 
-## Open Questions / NEEDS CLARIFICATION (max 3)
+## Resolved Questions
 
-- **Q1: Run Identifier Type**: Should run identifiers be human-friendly short codes (e.g., "RUN-2025-0001") or opaque UUIDs?  
-  - Option A: Human-friendly short codes — easier for users to read and share; requires server support for short code generation.  
-  - Option B: Opaque UUIDs — simpler to implement and globally unique; less friendly for manual entry.  
-
-- **Q2: Result Retention Policy**: How long should backend keep results accessible via run ID?  
-  - Option A: 30 days (reasonable default) — balances storage and reproducibility.  
-  - Option B: 1 year — favors reproducibility at higher storage cost.  
-  - Option C: Indefinite — requires explicit storage plan and higher cost.
-
-- **Q3: Notification Preference**: Should the UI provide asynchronous notifications (email/websocket) when long jobs complete, or rely solely on UI polling?  
-  - Option A: UI polling only (MVP) — simpler to implement.  
-  - Option B: Push notifications via websocket or server-sent events — better UX for long jobs but increases complexity.  
+- **Q1 (Run Identifier Type)**: Run identifiers are provided by the backend; the frontend will display and accept whatever identifier format the backend issues (opaque UUIDs or human-friendly codes).
+- **Q2 (Result Retention Policy)**: Frontend does not manage result retention or storage; availability of results is the backend's responsibility and surfaced via run ID lookups.
+- **Q3 (Notification Preference)**: Frontend will connect to the backend using websocket or SSE to receive job status updates for long-running jobs.
 
