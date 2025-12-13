@@ -1,0 +1,126 @@
+openapi: 3.0.3
+info:
+  title: Streamflow Job API (frontend contract)
+  version: '1.0.0'
+servers:
+  - url: ${VITE_API_BASE:-http://localhost:8000}
+paths:
+  /api/jobs:
+    post:
+      summary: Create a new simulation job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/RunRequestPoint'
+                - $ref: '#/components/schemas/RunRequestShapefile'
+      responses:
+        '201':
+          description: Job created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Run'
+  /api/jobs/{run_id}/status:
+    get:
+      summary: Get job status
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Job status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobStatus'
+  /api/results/{run_id}:
+    get:
+      summary: Get job results
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Result package
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultPackage'
+components:
+  schemas:
+    RunRequestPoint:
+      type: object
+      properties:
+        input_type:
+          type: string
+          enum: [point]
+        point:
+          type: object
+          properties:
+            latitude:
+              type: number
+            longitude:
+              type: number
+            label:
+              type: string
+          required: [latitude, longitude]
+    RunRequestShapefile:
+      type: object
+      properties:
+        input_type:
+          type: string
+          enum: [shapefile]
+        shapefile_url:
+          type: string
+        options:
+          type: object
+    Run:
+      type: object
+      properties:
+        run_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+        input_type:
+          type: string
+        result_urls:
+          type: object
+    JobStatus:
+      type: object
+      properties:
+        run_id:
+          type: string
+        status:
+          type: string
+        progress:
+          type: number
+    ResultPackage:
+      type: object
+      properties:
+        run_id:
+          type: string
+        time_series:
+          type: array
+          items:
+            type: object
+            properties:
+              timestamp:
+                type: string
+              value:
+                type: number
+        summary_stats:
+          type: object
+        download_url:
+          type: string
