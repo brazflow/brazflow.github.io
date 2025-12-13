@@ -1,0 +1,4 @@
+/* Minimal Leaflet CSS import for Vite */
+@import 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+
+.leaflet-container { height: 100%; width: 100%; }
