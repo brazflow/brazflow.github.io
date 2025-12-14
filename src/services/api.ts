@@ -3,11 +3,20 @@ import type { Run, ResultPackage } from '../utils/types'
 const API_BASE = import.meta.env.VITE_API_BASE || ''
 
 export async function createJob(payload: any): Promise<Run> {
-  const res = await fetch(`${API_BASE}/api/jobs`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  })
+  // Support FormData (file upload) or JSON payloads
+  let res
+  if (payload instanceof FormData) {
+    res = await fetch(`${API_BASE}/api/jobs`, {
+      method: 'POST',
+      body: payload,
+    })
+  } else {
+    res = await fetch(`${API_BASE}/api/jobs`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+  }
   if (!res.ok) throw new Error('Failed to create job')
   return res.json()
 }
