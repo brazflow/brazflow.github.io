@@ -4,14 +4,16 @@ import './App.css'
 import QuickRunPage from './pages/QuickRunPage'
 import UploadPage from './pages/UploadPage'
 import ResultsPage from './pages/ResultsPage'
+import Sidebar from './components/Sidebar'
 
 function App() {
   return (
     <div className="app-container">
-      <nav style={{ padding: 10 }}>
+      <nav className="header">
         <Link to="/">Quick Run</Link> | <Link to="/upload">Upload</Link>
       </nav>
-      <main style={{ padding: 16 }}>
+      <Sidebar />
+      <main style={{ marginLeft: 300 }}>
         <Routes>
           <Route path="/" element={<QuickRunPage />} />
           <Route path="/upload" element={<UploadPage />} />
