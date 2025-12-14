@@ -23,8 +23,8 @@ export default function QuickRunPage() {
   return (
     <div>
       <h2>Quick Run</h2>
-      <div style={{ display: 'flex', gap: 12 }}>
-        <div style={{ flex: 1 }}>
+      <div style={{ display: 'flex', gap: 12, height: 'calc(100vh - 160px)' }}>
+        <div style={{ width: 380 }}>
           <div>
             <label>Latitude</label>
             <input value={lat} onChange={e => setLat(Number(e.target.value))} />
@@ -38,7 +38,7 @@ export default function QuickRunPage() {
           </div>
         </div>
         <div style={{ flex: 1 }}>
-          <MapViewer marker={[lat, lon]} height={500} onMapClick={(newLat, newLon) => { setLat(newLat); setLon(newLon); }} />
+          <MapViewer marker={[lat, lon]} height={'100%'} onMapClick={(newLat, newLon) => { setLat(newLat); setLon(newLon); }} />
         </div>
       </div>
     </div>

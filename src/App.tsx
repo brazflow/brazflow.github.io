@@ -7,7 +7,7 @@ import ResultsPage from './pages/ResultsPage'
 
 function App() {
   return (
-    <div>
+    <div className="app-container">
       <nav style={{ padding: 10 }}>
         <Link to="/">Quick Run</Link> | <Link to="/upload">Upload</Link>
       </nav>
