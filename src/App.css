@@ -1,12 +1,14 @@
 .app-container { min-height: 100vh; display:flex; flex-direction:column; }
 main { flex: 1; }
 #root {
-  width: 100%;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  width: 100vw;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  text-align: left;
 }
+.app-container { width:100vw; }
+main { padding: 2rem; }
 
 .logo {
   height: 6em;
