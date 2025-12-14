@@ -3,7 +3,7 @@ import Map from 'ol/Map'
 import View from 'ol/View'
 import TileLayer from 'ol/layer/Tile'
 import OSM from 'ol/source/OSM'
-import { fromLonLat } from 'ol/proj'
+import { fromLonLat, toLonLat } from 'ol/proj'
 import VectorLayer from 'ol/layer/Vector'
 import VectorSource from 'ol/source/Vector'
 import GeoJSON from 'ol/format/GeoJSON'
@@ -16,9 +16,10 @@ type Props = {
   zoom?: number
   marker?: [number, number] | null
   geojson?: any
+  onMapClick?: (lat: number, lon: number) => void
 }
 
-export default function MapViewer({ center=[-14, -51], zoom=5, marker=null, geojson=null }: Props) {
+export default function MapViewer({ center=[-14, -51], zoom=5, marker=null, geojson=null, onMapClick }: Props) {
   const ref = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<any>(null)
 
@@ -46,6 +47,15 @@ export default function MapViewer({ center=[-14, -51], zoom=5, marker=null, geoj
     map.addLayer(vectorLayer)
     mapRef.current = { map, vectorSource, view }
 
+    if (onMapClick) {
+      map.on('singleclick', function(evt) {
+        const lonlat = toLonLat(evt.coordinate)
+        const lon = lonlat[0]
+        const lat = lonlat[1]
+        onMapClick(lat, lon)
+      })
+    }
+
     return () => {
       map.setTarget(null)
       mapRef.current = null
@@ -62,7 +72,7 @@ export default function MapViewer({ center=[-14, -51], zoom=5, marker=null, geoj
       const features = format.readFeatures(geojson, { featureProjection: 'EPSG:3857' })
       vectorSource.addFeatures(features)
       const extent = vectorSource.getExtent()
-      view.fit(extent, { padding: [20,20,20,20], maxZoom: 14 })
+      if (extent && extent[0] !== Infinity) view.fit(extent, { padding: [20,20,20,20], maxZoom: 14 })
     }
     if (marker) {
       const [lat, lon] = marker
