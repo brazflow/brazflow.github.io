@@ -17,7 +17,7 @@ type Props = {
   marker?: [number, number] | null
   geojson?: any
   onMapClick?: (lat: number, lon: number) => void
-  height?: number
+  height?: number | string
 }
 
 export default function MapViewer({ center=[-14, -51], zoom=5, marker=null, geojson=null, onMapClick, height=500 }: Props) {
@@ -48,6 +48,13 @@ export default function MapViewer({ center=[-14, -51], zoom=5, marker=null, geoj
     map.addLayer(vectorLayer)
     mapRef.current = { map, vectorSource, view }
 
+    // ensure size is updated after initial render
+    setTimeout(() => { try { map.updateSize() } catch (e) {} }, 200)
+
+    // update size on window resize
+    const onResize = () => { try { map.updateSize() } catch (e) {} }
+    window.addEventListener('resize', onResize)
+
     if (onMapClick) {
       map.on('singleclick', function(evt) {
         const lonlat = toLonLat(evt.coordinate)
@@ -58,6 +65,7 @@ export default function MapViewer({ center=[-14, -51], zoom=5, marker=null, geoj
     }
 
     return () => {
+      window.removeEventListener('resize', onResize)
       map.setTarget(null)
       mapRef.current = null
     }
@@ -66,14 +74,16 @@ export default function MapViewer({ center=[-14, -51], zoom=5, marker=null, geoj
   useEffect(() => {
     const ctx = mapRef.current
     if (!ctx) return
-    const { vectorSource, view } = ctx
+    const { vectorSource, view, map } = ctx
     vectorSource.clear()
     if (geojson) {
       const format = new GeoJSON()
       const features = format.readFeatures(geojson, { featureProjection: 'EPSG:3857' })
       vectorSource.addFeatures(features)
       const extent = vectorSource.getExtent()
-      if (extent && extent[0] !== Infinity) view.fit(extent, { padding: [20,20,20,20], maxZoom: 14 })
+      if (extent && extent[0] !== Infinity) {
+        view.fit(extent, { padding: [20,20,20,20], maxZoom: 14 })
+      }
     }
     if (marker) {
       const [lat, lon] = marker
@@ -84,7 +94,29 @@ export default function MapViewer({ center=[-14, -51], zoom=5, marker=null, geoj
       vectorSource.addFeature(feat)
       view.setCenter(fromLonLat([marker[1], marker[0]]))
     }
+    // after changing content, ensure map recalculates size
+    setTimeout(() => { try { map.updateSize() } catch (e) {} }, 100)
   }, [marker, geojson])
 
-  return <div ref={ref} style={{ height: height, width: '100%' }} />
+  // when height prop changes, trigger map resize
+  useEffect(() => {
+    const ctx = mapRef.current
+    if (!ctx) return
+    const { map } = ctx
+    setTimeout(() => { try { map.updateSize() } catch (e) {} }, 50)
+  }, [height])
+
+  // If user requested '100%' height, render map as fixed pane filling viewport right of left-column
+  if (typeof height === 'string' && height === '100%') {
+    const left = 300 // matches .left-column width
+    const top = 56 // header height
+    return <div ref={ref} style={{ position: 'fixed', left: left, top: top, right: 0, bottom: 0, zIndex: 0 }} />
+  }
+
+  // resolve height prop: allow '100%' to mean full viewport minus header (fallback)
+  const resolvedHeight = typeof height === 'string' && height === '100%'
+    ? `${Math.max(window.innerHeight - 56, 300)}px`
+    : height
+
+  return <div ref={ref} style={{ height: resolvedHeight, width: '100%', overflow: 'hidden' }} />
 }
