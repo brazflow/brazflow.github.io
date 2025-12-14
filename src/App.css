@@ -1,47 +1,89 @@
-.app-container { min-height: 100vh; display:flex; flex-direction:column; }
-main { flex: 1; }
-#root {
-  width: 100vw;
-  max-width: none;
-  margin: 0;
-  padding: 0;
-  text-align: left;
-}
-.app-container { width:100vw; }
-main { padding: 2rem; }
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+:root{
+  --bg:#1A1A2E;
+  --panel:#0F3460;
+  --panel-border:#5372F0;
+  --sidebar:#16213E;
+  --accent:#5372F0;
+  --accent-hover:#425bbf;
+  --muted:rgba(224,224,224,0.6);
+  --text:#E0E0E0;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+html,body,#root{height:100%;width:100%;margin:0;padding:0}
+body{font-family:'Roboto',sans-serif;background:var(--bg);color:var(--text)}
+
+.app-container { min-height: 100vh; display:flex; flex-direction:column; width:100vw; }
+.app-body { display:flex; flex: 1; }
+
+/* Sidebar */
+.sidebar{
+  width:350px;
+  min-width:350px;
+  background:var(--sidebar);
+  color:var(--text);
+  padding:1rem;
+  box-sizing:border-box;
+  position:relative;
+}
+.sidebar h3{margin:0;color:#fff}
+.sidebar hr{border-color:rgba(255,255,255,0.06)}
+
+.sidebar-button{
+  width:100%;
+  background:var(--accent);
+  color:white;
+  border-radius:5px;
+  border:none;
+  padding:0.6rem 0.75rem;
+  margin-bottom:8px;
+  cursor:pointer;
+  text-align:center;
+}
+.sidebar-button:hover{background:var(--accent-hover)}
+
+/* Main content */
+main{flex:1;padding:1rem;box-sizing:border-box;overflow:auto}
+
+/* Cards and panels */
+.card{
+  background:var(--panel);
+  border-radius:10px;
+  padding:20px;
+  margin-bottom:10px;
+  box-shadow:0 4px 8px rgba(0,0,0,0.2);
+  border:1px solid var(--panel-border);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* Small helpers */
+.small-muted{color:var(--muted)}
+
+/* Download link */
+.download-link-green{background-color:#28a745;color:white!important;padding:0.5rem 1rem;border-radius:5px;text-decoration:none!important;display:block;text-align:center;transition:background-color 0.3s}
+.download-link-green:hover{background-color:#218838;color:white!important}
+
+/* Spinner accent */
+.stSpinner>div>div{border-top-color:var(--accent) !important}
+
+/* Utility */
+.hidden{display:none}
+
+/* Responsive adjustments */
+@media(max-width:800px){
+  .sidebar{width:100%;min-width:unset;position:relative}
+  .app-body{flex-direction:column}
 }
 
-.card {
-  padding: 2em;
-}
+/* Brand logo */
+.brand-logo{display:flex;gap:12px;align-items:center}
+.brand-icon{font-size:34px;filter:drop-shadow(0 6px 12px rgba(0,0,0,0.4));transform:translateY(-2px)}
+.brand-title{font-weight:700;font-size:20px;color:#fff}
+.brand-sub{font-size:12px;color:var(--muted)}
 
-.read-the-docs {
-  color: #888;
-}
+.coords-input, .run-id-input{background:transparent;border:1px solid rgba(255,255,255,0.08);padding:8px;border-radius:6px;color:var(--text)}
+.coords-input::placeholder, .run-id-input::placeholder{color:rgba(224,224,224,0.5)}
+
+/* Make logo more chamativo */
+.brand-logo{background:linear-gradient(90deg, rgba(83,114,240,0.12), rgba(33,91,191,0.08));padding:8px;border-radius:8px;border:1px solid rgba(83,114,240,0.16)}
+.brand-title{background:linear-gradient(90deg,#ffd166,#ef476f);-webkit-background-clip:text;background-clip:text;color:transparent}

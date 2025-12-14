@@ -106,16 +106,15 @@ export default function MapViewer({ center=[-14, -51], zoom=5, marker=null, geoj
     setTimeout(() => { try { map.updateSize() } catch (e) {} }, 50)
   }, [height])
 
-  // If user requested '100%' height, render map as fixed pane filling viewport right of left-column
+  // If user requested '100%' height, render map to fill the right-column using CSS calc
   if (typeof height === 'string' && height === '100%') {
-    const left = 300 // matches .left-column width
-    const top = 56 // header height
-    return <div ref={ref} style={{ position: 'fixed', left: left, top: top, right: 0, bottom: 0, zIndex: 0 }} />
+    // fill full available viewport height minus header
+    return <div ref={ref} style={{ height: 'calc(100vh - 56px)', width: '100%', overflow: 'hidden' }} />
   }
 
-  // resolve height prop: allow '100%' to mean full viewport minus header (fallback)
+  // resolve height prop: allow numeric or other string values
   const resolvedHeight = typeof height === 'string' && height === '100%'
-    ? `${Math.max(window.innerHeight - 56, 300)}px`
+    ? 'calc(100vh - 56px)'
     : height
 
   return <div ref={ref} style={{ height: resolvedHeight, width: '100%', overflow: 'hidden' }} />

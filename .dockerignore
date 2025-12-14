@@ -1,0 +1,9 @@
+node_modules
+.git
+Dockerfile*
+*.log
+.env*
+dist
+build
+coverage
+.DS_Store
