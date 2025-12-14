@@ -38,7 +38,7 @@ export default function QuickRunPage() {
           </div>
         </div>
         <div style={{ flex: 1 }}>
-          <MapViewer marker={[lat, lon]} onMapClick={(newLat, newLon) => { setLat(newLat); setLon(newLon); }} />
+          <MapViewer marker={[lat, lon]} height={500} onMapClick={(newLat, newLon) => { setLat(newLat); setLon(newLon); }} />
         </div>
       </div>
     </div>

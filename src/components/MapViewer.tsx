@@ -17,9 +17,10 @@ type Props = {
   marker?: [number, number] | null
   geojson?: any
   onMapClick?: (lat: number, lon: number) => void
+  height?: number
 }
 
-export default function MapViewer({ center=[-14, -51], zoom=5, marker=null, geojson=null, onMapClick }: Props) {
+export default function MapViewer({ center=[-14, -51], zoom=5, marker=null, geojson=null, onMapClick, height=500 }: Props) {
   const ref = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<any>(null)
 
@@ -85,5 +86,5 @@ export default function MapViewer({ center=[-14, -51], zoom=5, marker=null, geoj
     }
   }, [marker, geojson])
 
-  return <div ref={ref} style={{ height: 400, width: '100%' }} />
+  return <div ref={ref} style={{ height: height, width: '100%' }} />
 }
