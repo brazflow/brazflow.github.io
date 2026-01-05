@@ -80,10 +80,12 @@ export default function MapViewer({ center=[-14, -51], zoom=5, marker=null, geoj
       const format = new GeoJSON()
       const features = format.readFeatures(geojson, { featureProjection: 'EPSG:3857' })
       vectorSource.addFeatures(features)
-      const extent = vectorSource.getExtent()
-      if (extent && extent[0] !== Infinity) {
-        view.fit(extent, { padding: [20,20,20,20], maxZoom: 14 })
-      }
+      setTimeout(() => {
+        const extent = vectorSource.getExtent()
+        if (extent && extent[0] !== Infinity) {
+          view.fit(extent, { padding: [20,20,20,20], duration: 500 })
+        }
+      }, 300) // delay fit to ensure map is sized
     }
     if (marker) {
       const [lat, lon] = marker
