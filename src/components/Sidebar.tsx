@@ -54,14 +54,14 @@ export default function Sidebar() {
     const latVal = coords?.lat ?? lat
     const lngVal = coords?.lng ?? lng
     if (typeof latVal !== 'number' || typeof lngVal !== 'number' || Number.isNaN(latVal) || Number.isNaN(lngVal)) {
-      alert('Invalid coordinates')
+      alert(t('invalid_coordinates'))
       return
     }
     try {
       const task = await launchPredictTask({ outlet: { lat: latVal, lng: lngVal } })
       navigate(`/results/${encodeURIComponent(task.task_id)}`)
     } catch (e) {
-      alert('Failed to create job')
+      alert(t('failed_to_create_job'))
     }
   }
 
@@ -134,7 +134,7 @@ export default function Sidebar() {
       </div>
 
       <div style={{ position: 'absolute', bottom: 16, left: 16, right: 16 }}>
-        <small className="small-muted">Example UI — use backend for jobs and results</small>
+        <small className="small-muted">{t('copyright')}</small>
       </div>
     </aside>
   )

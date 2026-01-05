@@ -48,10 +48,10 @@ export default function ResultsPage() {
     <div>
       {/* Header and Download Button */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <h1 style={{ margin: 0, fontSize: '2.5em' }}>Simulation Results</h1> {/* Increased header size */}
+        <h1 style={{ margin: 0, fontSize: '2.5em' }}>{t('simulation_results')}</h1> {/* Increased header size */}
         {data && (
           <button onClick={handleDownload} className="sidebar-button" style={{ width: 'auto' }}>
-            Download Results
+            {t('download_results')}
           </button>
         )}
       </div>
@@ -59,13 +59,13 @@ export default function ResultsPage() {
       {/* Log Viewer at the top */}
       <div className="card" style={{ marginBottom: 24, padding: '10px 20px' }}> {/* Subtle box style */}
         <button onClick={() => setIsLogVisible(!isLogVisible)} style={{ background: 'none', border: 'none', color: 'var(--text)', cursor: 'pointer', padding: 0, fontWeight: 'bold' }}>
-          {isLogVisible ? 'Hide Log Details' : 'Show Log Details'}
+          {isLogVisible ? t('hide_log_details') : t('show_log_details')}
         </button>
         {isLogVisible && (
           <>
             <h3 style={{ marginTop: 12, marginBottom: 8 }}>{t('logs')}</h3>
             <pre style={{ height: 300, overflow: 'auto', background: '#111', color: '#eee', padding: 8, whiteSpace: 'pre-wrap', borderRadius: 4 }}>
-              {statusQ.data ? JSON.stringify(statusQ.data, null, 2) : 'Polling for status...'}
+              {statusQ.data ? JSON.stringify(statusQ.data, null, 2) : t('polling_for_status')}
             </pre>
           </>
         )}
@@ -73,12 +73,12 @@ export default function ResultsPage() {
 
       {/* Status Display - moved and improved */}
       <div className="card" style={{ marginBottom: 24, padding: '10px 20px', display: 'flex', alignItems: 'center', gap: 10 }}>
-        <h3 style={{ margin: 0 }}>Status:</h3>
+        <h3 style={{ margin: 0 }}>{t('status_label')}</h3>
         <span style={{ fontWeight: 'bold', color: statusQ.data?.status === 'completed' ? 'lightgreen' : (statusQ.data?.status === 'failed' ? 'red' : 'yellow') }}>
-          {statusQ.isLoading ? 'Loading...' : statusQ.data?.status?.toUpperCase()}
+          {statusQ.isLoading ? t('loading') : statusQ.data?.status?.toUpperCase()}
         </span>
-        {statusQ.data?.status === 'running' && <span style={{ fontStyle: 'italic' }}>Job is running, results will appear when complete.</span>}
-        {statusQ.data?.status === 'failed' && <span style={{ color: 'red' }}>Job failed: {statusQ.data.error}</span>}
+        {statusQ.data?.status === 'running' && <span style={{ fontStyle: 'italic' }}>{t('job_running')}</span>}
+        {statusQ.data?.status === 'failed' && <span style={{ color: 'red' }}>{t('job_failed')} {statusQ.data.error}</span>}
       </div>
 
 
@@ -95,7 +95,7 @@ export default function ResultsPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
             {metrics && (
               <div className="card">
-                <h3>Hydrological Signatures</h3>
+                <h3>{t('hydrological_signatures')}</h3>
                 <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                   {Object.entries(metrics).map(([name, value]: any) => (
                     <div key={name} style={{ flex: '1 1 120px', background: '#0F3460', padding: 12, borderRadius: 8 }}>
@@ -113,7 +113,7 @@ export default function ResultsPage() {
           </div>
         </div>
       ) : (
-        !statusQ.isLoading && statusQ.data?.status !== 'running' && <div>No results available.</div>
+        !statusQ.isLoading && statusQ.data?.status !== 'running' && <div>{t('no_results_available')}</div>
       )}
     </div>
   )

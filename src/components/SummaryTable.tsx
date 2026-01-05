@@ -1,6 +1,9 @@
 
+import { useI18n } from '../i18n'
+
 export default function SummaryTable({ summary }: { summary?: Record<string, number> }) {
-  if (!summary) return <div>No summary available</div>
+  const { t } = useI18n()
+  if (!summary) return <div>{t('no_summary_available')}</div>
   return (
     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
       <tbody>
