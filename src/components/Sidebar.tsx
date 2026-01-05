@@ -10,7 +10,7 @@ export default function Sidebar() {
   const [method, setMethod] = useState<'map' | 'coords' | 'shp' | 'kmz'>('map')
   const [lat, setLat] = useState<number>(0.0)
   const [lng, setLng] = useState<number>(0.0)
-  const [model, setModel] = useState<string>(() => localStorage.getItem('brazflow.model') || 'cudalstm-precip-aridityidx')
+  // const [model, setModel] = useState<string>(() => localStorage.getItem('brazflow.model') || 'cudalstm-precip-aridityidx')
   const navigate = useNavigate()
 
   React.useEffect(() => {
@@ -99,7 +99,7 @@ export default function Sidebar() {
 
         {(method === 'map' || method === 'coords') && (
           <>
-            {/* Model selection */}
+            {/* Model selection 
             <div className="mt-2">
               <div className="mb-1"><small className="text-sm text-white/60">{t('model_selection_label')}</small></div>
               <select value={model} onChange={(e) => { try { const v = e.target.value; setModel(v); localStorage.setItem('brazflow.model', v); } catch (e) {} }} className="w-full p-2 rounded bg-transparent text-white border border-white/8">
@@ -107,7 +107,8 @@ export default function Sidebar() {
                 <option value="ealstm-precip-aridityidx">ealstm-precip-aridityidx</option>
               </select>
             </div>
-
+            */}
+            
             <div className="mt-3">
               <button className="sidebar-button" onClick={runJob}>{t('run_button_label')}</button>
             </div>
