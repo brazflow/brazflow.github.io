@@ -52,7 +52,7 @@ export default function TimeSeriesChart({ data }: { data: Array<TimeSeriesData> 
   if (!data || data.length === 0) return <div>No data</div>
 
   return (
-    <div>
+    <div className="card">
       <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
         <h3 style={{ margin: 0 }}>Streamflow and Precipitation</h3>
         <select value={selectedYear} onChange={e => setSelectedYear(e.target.value)} style={{ padding: '4px 8px' }}>
