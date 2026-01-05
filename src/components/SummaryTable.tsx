@@ -1,4 +1,3 @@
-import React from 'react'
 
 export default function SummaryTable({ summary }: { summary?: Record<string, number> }) {
   if (!summary) return <div>No summary available</div>

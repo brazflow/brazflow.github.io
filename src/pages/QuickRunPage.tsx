@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { createJob } from '../services/api'
-import Button from '../components/Button'
+import { launchPredictTask } from '../services/api'
 import MapViewer from '../components/MapViewer'
 
 export default function QuickRunPage() {
   const [lat, setLat] = useState<number>(-10)
   const [lon, setLon] = useState<number>(-44)
-  const [loading, setLoading] = useState(false)
   const nav = useNavigate()
 
   // Load initial coords from localStorage and listen for external coord events
@@ -43,22 +41,27 @@ export default function QuickRunPage() {
     }
   }, [])
 
-  async function submit() {
-    setLoading(true)
-    try {
-      const run = await createJob({ input_type: 'point', point: { latitude: lat, longitude: lon } })
-      nav(`/results/${encodeURIComponent(run.run_id)}`)
-    } catch (e) {
-      alert('Failed to create job')
-    } finally { setLoading(false) }
-  }
-
   return (
     <div>
       <h1 className="text-2xl font-bold my-4">Water Availability Analysis</h1>
-      <div className="flex gap-3 h-[calc(100vh-160px)]">
+      <div className="flex gap-3 h-[calc(100vh-200px)]">
         <div className="flex-1">
-          <MapViewer marker={[lat, lon]} height={'100%'} onMapClick={(newLat, newLon) => { setLat(newLat); setLon(newLon); localStorage.setItem('brazflow.coords', JSON.stringify({lat:newLat,lng:newLon})); window.dispatchEvent(new CustomEvent('brazflow:coords',{detail:{lat:newLat,lng:newLon}})); }} />
+          <MapViewer marker={[lat, lon]} height={'100%'} onMapClick={(newLat, newLon) => { 
+            setLat(newLat); 
+            setLon(newLon); 
+            localStorage.setItem('brazflow.coords', JSON.stringify({lat:newLat,lng:newLon})); 
+            window.dispatchEvent(new CustomEvent('brazflow:coords',{detail:{lat:newLat,lng:newLon}})); 
+            
+            // Automatically launch task on map click
+            (async () => {
+              try {
+                const task = await launchPredictTask({ outlet: { lat: newLat, lng: newLon } })
+                nav(`/results/${encodeURIComponent(task.task_id)}`)
+              } catch (e) {
+                alert('Failed to create job')
+              }
+            })();
+          }} />
         </div>
       </div>
     </div>

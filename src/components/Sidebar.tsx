@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import RunLookup from './RunLookup'
 import BrandLogo from './BrandLogo'
 import { useI18n } from '../i18n'
-import { createJob } from '../services/api'
+import { launchPredictTask } from '../services/api'
 
 export default function Sidebar() {
   const { locale, setLocale, t } = useI18n()
@@ -58,9 +58,8 @@ export default function Sidebar() {
       return
     }
     try {
-      const selectedModel = model || 'cudalstm-precip-aridityidx'
-      const run = await createJob({ input_type: 'point', point: { latitude: latVal, longitude: lngVal }, model: selectedModel })
-      navigate(`/results/${encodeURIComponent(run.run_id)}`)
+      const task = await launchPredictTask({ outlet: { lat: latVal, lng: lngVal } })
+      navigate(`/results/${encodeURIComponent(task.task_id)}`)
     } catch (e) {
       alert('Failed to create job')
     }

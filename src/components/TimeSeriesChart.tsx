@@ -1,4 +1,3 @@
-import React from 'react'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 
 export default function TimeSeriesChart({ data }: { data: Array<{ timestamp: string, value: number }> }) {

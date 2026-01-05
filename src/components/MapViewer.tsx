@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import Map from 'ol/Map'
 import View from 'ol/View'
 import TileLayer from 'ol/layer/Tile'
@@ -66,7 +66,7 @@ export default function MapViewer({ center=[-14, -51], zoom=5, marker=null, geoj
 
     return () => {
       window.removeEventListener('resize', onResize)
-      map.setTarget(null)
+      map.setTarget(undefined)
       mapRef.current = null
     }
   }, [])

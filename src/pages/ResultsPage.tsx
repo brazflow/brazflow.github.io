@@ -1,62 +1,65 @@
-import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useJobStatus } from '../hooks/useJobStatus'
-import { getResults } from '../services/api'
-import { useQuery } from '@tanstack/react-query'
 import TimeSeriesChart from '../components/TimeSeriesChart'
-import SummaryTable from '../components/SummaryTable'
-import useSSE from '../hooks/useSSE'
+import MapViewer from '../components/MapViewer'
 import { useI18n } from '../i18n'
 
 export default function ResultsPage() {
-  const { runId } = useParams()
+  const { taskId } = useParams<{ taskId: string }>()
   const { t } = useI18n()
-  const statusQ = useJobStatus(runId || null)
-  const resultsQ = useQuery(['results', runId], () => getResults(runId as string), { enabled: !!runId })
-  const [logs, setLogs] = useState<string[]>([])
+  const statusQ = useJobStatus(taskId || null)
 
-  useSSE(runId ? `${import.meta.env.VITE_API_BASE || ''}/api/jobs/${encodeURIComponent(runId)}/events` : null, (data) => {
-    // Append textual messages to logs when present
-    try {
-      if (data && data.message) setLogs(l => [...l, String(data.message)])
-      else if (typeof data === 'string') setLogs(l => [...l, data])
-    } catch { }
-  })
+  const data = statusQ.data?.result
+  const geojson = data?.catchment
+  const marker: [number, number] | null = data?.snapped ? [data.snapped.lat, data.snapped.lng] : null
+  const metrics = data?.metrics
 
-  useEffect(() => {
-    if (resultsQ.data && resultsQ.data.time_series) {
-      // ensure logs show retrieval
-      setLogs(l => [...l, 'Results loaded'])
-    }
-  }, [resultsQ.data])
+  const timeSeriesData = data ? data.time_index.map((ts, i) => ({ timestamp: ts, value: data.runoff_simulation[i] })) : []
 
   return (
     <div style={{ display: 'flex', gap: 12 }}>
       <div style={{ flex: 2 }}>
-        <h2>{t('results')}: {runId}</h2>
-        <div>{t('status')}: {statusQ.data ? statusQ.data.status : 'unknown'}</div>
-        {resultsQ.data ? (
+        {taskId && <h2>{t('results')}: {taskId}</h2>}
+        <div>{t('status')}: {statusQ.isLoading ? 'loading...' : statusQ.data?.status}</div>
+        {statusQ.data?.status === 'running' && <div>Job is running, results will appear when complete.</div>}
+        {statusQ.data?.status === 'failed' && <div>Job failed: {statusQ.data.error}</div>}
+        
+        {statusQ.isLoading && <div>Loading status...</div>}
+        {statusQ.isError && <div>Error loading status.</div>}
+
+        {data ? (
           <>
-            <TimeSeriesChart data={resultsQ.data.time_series || []} />
-            <h3>Summary</h3>
-            <SummaryTable summary={resultsQ.data.summary_stats} />
-            {resultsQ.data.download_url && <div style={{ marginTop: 8 }}><a href={resultsQ.data.download_url}>{t('download')}</a></div>}
-            {/* images if present */}
-            {resultsQ.data && (resultsQ.data as any).images && (
-              <div>
-                {(resultsQ.data as any).images.map((u: string, i: number) => (
-                  <img key={i} src={u} alt={`figure-${i}`} style={{ maxWidth: '100%', marginTop: 8 }} />
-                ))}
+            {geojson && (
+              <div style={{ marginBottom: 12 }}>
+                <MapViewer geojson={geojson} marker={marker} height={300} />
               </div>
             )}
+
+            {metrics && (
+              <div style={{ marginBottom: 12 }}>
+                <h3>{t('hydro_signatures_subheader') || 'Hydrological Signatures'}</h3>
+                <div style={{ display: 'flex', gap: 12 }}>
+                  {Object.entries(metrics).map(([name, value]: any) => (
+                    <div key={name} style={{ flex: 1, background: '#0F3460', padding: 12, borderRadius: 8 }}>
+                      <div style={{ fontSize: 12, color: '#bbb' }}>{name.replace(/_/g, ' ').toUpperCase()}</div>
+                      <div style={{ fontSize: 20, fontWeight: 700 }}>{typeof value === 'number' ? value.toFixed(2) : String(value)}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <TimeSeriesChart data={timeSeriesData} />
           </>
-        ) : <div>Loading results...</div>}
+        ) : (
+          !statusQ.isLoading && statusQ.data?.status !== 'running' && <div>No results available.</div>
+        )}
       </div>
       <aside style={{ width: 360 }}>
         <h3>{t('logs')}</h3>
-        <div style={{ height: 400, overflow: 'auto', background: '#111', color: '#eee', padding: 8 }}>
-          {logs.map((l, i) => <div key={i} style={{ fontFamily: 'monospace', fontSize: 12 }}>{l}</div>)}
-        </div>
+        <pre style={{ height: 400, overflow: 'auto', background: '#111', color: '#eee', padding: 8, whiteSpace: 'pre-wrap' }}>
+          {statusQ.data ? JSON.stringify(statusQ.data, null, 2) : 'Polling for status...'}
+        </pre>
       </aside>
     </div>
   )

@@ -1,34 +1,30 @@
-import type { Run, ResultPackage } from '../utils/types'
+import type {
+  PredictRequest,
+  TaskResponse,
+  TaskStatusResponse,
+  ResultTask,
+} from '../utils/types'
 
-const API_BASE = import.meta.env.VITE_API_BASE || ''
+export const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000'
 
-export async function createJob(payload: any): Promise<Run> {
-  // Support FormData (file upload) or JSON payloads
-  let res
-  if (payload instanceof FormData) {
-    res = await fetch(`${API_BASE}/api/jobs`, {
-      method: 'POST',
-      body: payload,
-    })
-  } else {
-    res = await fetch(`${API_BASE}/api/jobs`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    })
-  }
-  if (!res.ok) throw new Error('Failed to create job')
+export async function launchPredictTask(payload: PredictRequest): Promise<TaskResponse> {
+  const res = await fetch(`${API_BASE}/api/v2/predict/launch`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  if (!res.ok) throw new Error('Failed to launch prediction task')
   return res.json()
 }
 
-export async function getJobStatus(runId: string): Promise<any> {
-  const res = await fetch(`${API_BASE}/api/jobs/${encodeURIComponent(runId)}/status`)
-  if (!res.ok) throw new Error('Failed to fetch job status')
+export async function getTaskStatus(taskId: string): Promise<TaskStatusResponse> {
+  const res = await fetch(`${API_BASE}/api/v2/predict/${encodeURIComponent(taskId)}/status`)
+  if (!res.ok) throw new Error('Failed to fetch task status')
   return res.json()
 }
 
-export async function getResults(runId: string): Promise<ResultPackage> {
-  const res = await fetch(`${API_BASE}/api/results/${encodeURIComponent(runId)}`)
-  if (!res.ok) throw new Error('Failed to fetch results')
+export async function getTaskResult(taskId: string): Promise<ResultTask> {
+  const res = await fetch(`${API_BASE}/api/v2/predict/${encodeURIComponent(taskId)}/result`)
+  if (!res.ok) throw new Error('Failed to fetch task result')
   return res.json()
 }

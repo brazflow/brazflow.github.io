@@ -35,7 +35,7 @@ const translations: any = {
   }
 }
 
-const I18nContext = createContext<any>({ locale: 'en-US', t: (k: string) => k, setLocale: (l: string) => {} })
+const I18nContext = createContext<any>({ locale: 'en-US', t: (k: string) => k, setLocale: (_l: string) => {} })
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
   const [locale, setLocale] = useState<'en-US' | 'pt-BR'>('en-US')

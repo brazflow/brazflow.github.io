@@ -1,15 +1,21 @@
-import { useQueryClient, useQuery } from '@tanstack/react-query'
-import { getJobStatus } from '../services/api'
-import useSSE from './useSSE'
+import { useQuery } from '@tanstack/react-query'
+import { getTaskStatus } from '../services/api'
+import type { TaskStatusResponse } from '../utils/types'
 
-export function useJobStatus(runId: string | null) {
-  const queryClient = useQueryClient()
-  const enabled = !!runId
-  const query = useQuery(['job', runId], () => getJobStatus(runId as string), { enabled })
-
-  useSSE(runId ? `${import.meta.env.VITE_API_BASE || ''}/api/jobs/${encodeURIComponent(runId)}/events` : null, (data) => {
-    // Update cache when SSE events arrive
-    queryClient.setQueryData(['job', runId], (old: any) => ({ ...(old || {}), ...data }))
+export function useJobStatus(taskId: string | null) {
+  const enabled = !!taskId
+  const query = useQuery<TaskStatusResponse>({
+    queryKey: ['task', taskId],
+    queryFn: () => getTaskStatus(taskId as string),
+    enabled,
+    refetchInterval: (query) => {
+      const data = query.state.data
+      if (data?.status === 'completed' || data?.status === 'failed') {
+        return false // Stop refetching if the job is done
+      }
+      return 5000 // Refetch every 5 seconds
+    },
+    refetchOnWindowFocus: false,
   })
 
   return query

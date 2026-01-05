@@ -1,8 +1,7 @@
-import { Routes, Route, Link } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import './App.css'
 
 import QuickRunPage from './pages/QuickRunPage'
-import UploadPage from './pages/UploadPage'
 import ResultsPage from './pages/ResultsPage'
 import Sidebar from './components/Sidebar'
 
@@ -14,8 +13,7 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<QuickRunPage />} />
-            <Route path="/upload" element={<UploadPage />} />
-            <Route path="/results/:runId" element={<ResultsPage />} />
+            <Route path="/results/:taskId" element={<ResultsPage />} />
           </Routes>
         </main>
       </div>
