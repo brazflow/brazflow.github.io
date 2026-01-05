@@ -14,7 +14,7 @@ export default function ResultsPage() {
   const marker: [number, number] | null = data?.snapped ? [data.snapped.lat, data.snapped.lng] : null
   const metrics = data?.metrics
 
-  const timeSeriesData = data ? data.time_index.map((ts, i) => ({ timestamp: ts, value: data.runoff_simulation[i] })) : []
+  const timeSeriesData = data ? data.time_index.map((ts, i) => ({ timestamp: ts, runoff: data.runoff_simulation[i], precipitation: data.precipitation[i] })) : []
 
   return (
     <div style={{ display: 'flex', gap: 12 }}>
