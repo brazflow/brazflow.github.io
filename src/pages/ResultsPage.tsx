@@ -3,6 +3,7 @@ import { useJobStatus } from '../hooks/useJobStatus'
 import TimeSeriesChart from '../components/TimeSeriesChart'
 import MapViewer from '../components/MapViewer'
 import { useI18n } from '../i18n'
+import FlowDurationCurve from '../components/FlowDurationCurve'
 
 export default function ResultsPage() {
   const { taskId } = useParams<{ taskId: string }>()
@@ -15,6 +16,7 @@ export default function ResultsPage() {
   const metrics = data?.metrics
 
   const timeSeriesData = data ? data.time_index.map((ts, i) => ({ timestamp: ts, runoff: data.runoff_simulation[i], precipitation: data.precipitation[i] })) : []
+  const runoffData = data ? data.runoff_simulation : []
 
   return (
     <div style={{ display: 'flex', gap: 12 }}>
@@ -50,6 +52,9 @@ export default function ResultsPage() {
             )}
 
             <TimeSeriesChart data={timeSeriesData} />
+            <div style={{ marginTop: 24 }}>
+              <FlowDurationCurve data={runoffData} />
+            </div>
           </>
         ) : (
           !statusQ.isLoading && statusQ.data?.status !== 'running' && <div>No results available.</div>
