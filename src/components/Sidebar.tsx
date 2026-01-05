@@ -66,7 +66,7 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="sidebar bg-[#16213E] p-4 text-white relative" aria-label="Sidebar">
+    <aside className="w-full min-w-0 relative bg-brazflow-sidebar p-4 text-brazflow-text md:w-[350px] md:min-w-[350px] md:sticky md:top-0 md:h-screen" aria-label="Sidebar">
       <div className="flex justify-between items-center mb-2">
         <BrandLogo />
         <div>
@@ -91,9 +91,9 @@ export default function Sidebar() {
 
         {method === 'coords' && (
           <div className="mt-2 grid gap-2">
-            <input className="coords-input" type="number" value={lat} onChange={e => setLat(parseFloat(e.target.value))} placeholder={t('latitude_label')} />
-            <input className="coords-input" type="number" value={lng} onChange={e => setLng(parseFloat(e.target.value))} placeholder={t('longitude_label')} />
-            <button className="sidebar-button" onClick={useCoords}>{t('use_coords_button')}</button>
+            <input className="bg-transparent border border-white/10 p-2 rounded-md text-brazflow-text placeholder:text-brazflow-muted" type="number" value={lat} onChange={e => setLat(parseFloat(e.target.value))} placeholder={t('latitude_label')} />
+            <input className="bg-transparent border border-white/10 p-2 rounded-md text-brazflow-text placeholder:text-brazflow-muted" type="number" value={lng} onChange={e => setLng(parseFloat(e.target.value))} placeholder={t('longitude_label')} />
+            <button className="w-full bg-brazflow-panel text-brazflow-text rounded-md border-none py-2.5 px-3 mb-2 cursor-pointer text-center hover:bg-brazflow-panel-hover" onClick={useCoords}>{t('use_coords_button')}</button>
           </div>
         )}
 
@@ -110,20 +110,20 @@ export default function Sidebar() {
             */}
             
             <div className="mt-3">
-              <button className="sidebar-button" onClick={runJob}>{t('run_button_label')}</button>
+              <button className="w-full bg-brazflow-panel text-brazflow-text rounded-md border-none py-2.5 px-3 mb-2 cursor-pointer text-center hover:bg-brazflow-panel-hover" onClick={runJob}>{t('run_button_label')}</button>
             </div>
           </>
         )}
 
         {method === 'shp' && (
           <div className="mt-4">
-            <button className="sidebar-button" onClick={() => navigate('/upload')}>{t('method_shp')}</button>
+            <button className="w-full bg-brazflow-panel text-brazflow-text rounded-md border-none py-2.5 px-3 mb-2 cursor-pointer text-center hover:bg-brazflow-panel-hover" onClick={() => navigate('/upload')}>{t('method_shp')}</button>
           </div>
         )}
 
         {method === 'kmz' && (
           <div className="mt-4">
-            <button className="sidebar-button" onClick={() => navigate('/upload?type=kmz')}>{t('method_kmz')}</button>
+            <button className="w-full bg-brazflow-panel text-brazflow-text rounded-md border-none py-2.5 px-3 mb-2 cursor-pointer text-center hover:bg-brazflow-panel-hover" onClick={() => navigate('/upload?type=kmz')}>{t('method_kmz')}</button>
           </div>
         )}
 
@@ -134,9 +134,10 @@ export default function Sidebar() {
       </div>
 
       <div style={{ position: 'absolute', bottom: 16, left: 16, right: 16 }}>
-        <small className="small-muted">{t('copyright')}</small>
+        <small className="text-brazflow-muted">{t('copyright')}</small>
       </div>
     </aside>
   )
 }
+
 
