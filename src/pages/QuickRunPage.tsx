@@ -44,8 +44,8 @@ export default function QuickRunPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold my-4">Water Availability Analysis</h1>
-      <div className="flex gap-3 h-[calc(100vh-200px)]">
-        <div className="flex-1">
+      <div className="flex flex-col md:flex-row gap-3 h-[calc(100vh-200px)]">
+        <div className="flex-1 min-h-[300px] md:min-h-auto">
           <MapViewer marker={[lat, lon]} height={'100%'} onMapClick={(newLat, newLon) => { 
             setLat(newLat); 
             setLon(newLon); 

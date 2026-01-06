@@ -47,10 +47,10 @@ export default function ResultsPage() {
   return (
     <div>
       {/* Header and Download Button */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <h1 style={{ margin: 0, fontSize: '2.5em' }}>{t('simulation_results')}</h1> {/* Increased header size */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-3">
+        <h1 className="text-3xl md:text-4xl m-0">{t('simulation_results')}</h1>
         {data && (
-          <button onClick={handleDownload} className="bg-brazflow-panel text-brazflow-text rounded-md border-none py-2.5 px-3 mb-2 cursor-pointer text-center hover:bg-brazflow-panel-hover w-auto">
+          <button onClick={handleDownload} className="bg-brazflow-panel text-brazflow-text rounded-md border-none py-2.5 px-3 cursor-pointer text-center hover:bg-brazflow-panel-hover w-full md:w-auto">
             {t('download_results')}
           </button>
         )}
@@ -72,35 +72,43 @@ export default function ResultsPage() {
       </div>
 
       {/* Status Display - moved and improved */}
-      <div className="bg-brazflow-panel rounded-[10px] shadow-[0_4px_8px_rgba(0,0,0,0.2)] border border-brazflow-panel-border mb-6 py-2.5 px-5 flex items-center gap-x-2.5">
-        <h3 className="m-0">{t('status_label')}</h3>
-        <span className={`font-bold ${
-            statusQ.data?.status === 'completed' ? 'text-green-400' :
-            statusQ.data?.status === 'failed' ? 'text-red-500' :
-            'text-yellow-400'
-          }`}>
-          {statusQ.isLoading ? t('loading') : statusQ.data?.status?.toUpperCase()}
-        </span>
-        {statusQ.data?.status === 'running' && <span className="italic">{t('job_running')}</span>}
-        {statusQ.data?.status === 'failed' && <span className="text-red-500">{t('job_failed')} {statusQ.data.error}</span>}
+      <div className="bg-brazflow-panel rounded-[10px] shadow-[0_4px_8px_rgba(0,0,0,0.2)] border border-brazflow-panel-border mb-6 py-2.5 px-5">
+        <div className="flex flex-col gap-2">
+          <div className="text-sm text-brazflow-muted">
+            <span className="font-semibold text-brazflow-text">Task ID:</span> {taskId}
+          </div>
+
+          <div className="flex items-center gap-x-2.5">
+            <h3 className="m-0">{t('status_label')}</h3>
+            <span className={`font-bold ${
+                statusQ.data?.status === 'completed' ? 'text-green-400' :
+                statusQ.data?.status === 'failed' ? 'text-red-500' :
+                'text-yellow-400'
+              }`}>
+              {statusQ.isLoading ? t('loading') : statusQ.data?.status?.toUpperCase()}
+            </span>
+          </div>
+          {statusQ.data?.status === 'running' && <span className="italic text-sm">{t('job_running')}</span>}
+          {statusQ.data?.status === 'failed' && <span className="text-red-500 text-sm">{t('job_failed')} {statusQ.data.error}</span>}
+        </div>
       </div>
 
 
       {data ? (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="flex flex-col gap-6">
             {geojson && (
-              <div className="bg-brazflow-panel rounded-[10px] p-5 mb-6 shadow-[0_4px_8px_rgba(0,0,0,0.2)] border border-brazflow-panel-border">
+              <div className="bg-brazflow-panel rounded-[10px] p-5 shadow-[0_4px_8px_rgba(0,0,0,0.2)] border border-brazflow-panel-border">
                 <MapViewer geojson={geojson} marker={marker} height={300} />
               </div>
             )}
-            <div className="bg-brazflow-panel rounded-[10px] p-5 mb-6 shadow-[0_4px_8px_rgba(0,0,0,0.2)] border border-brazflow-panel-border">
+            <div className="bg-brazflow-panel rounded-[10px] p-5 shadow-[0_4px_8px_rgba(0,0,0,0.2)] border border-brazflow-panel-border">
               <FlowDurationCurve data={runoffData} />
             </div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <div className="flex flex-col gap-6">
             {metrics && (
-              <div className="bg-brazflow-panel rounded-[10px] p-5 mb-6 shadow-[0_4px_8px_rgba(0,0,0,0.2)] border border-brazflow-panel-border">
+              <div className="bg-brazflow-panel rounded-[10px] p-5 shadow-[0_4px_8px_rgba(0,0,0,0.2)] border border-brazflow-panel-border">
                 <h3>{t('hydrological_signatures')}</h3>
                 <div className="flex gap-3 flex-wrap">
                   {Object.entries(metrics).map(([name, value]: any) => (
@@ -115,7 +123,7 @@ export default function ResultsPage() {
                 </div>
               </div>
             )}
-            <div className="bg-brazflow-panel rounded-[10px] p-5 mb-6 shadow-[0_4px_8px_rgba(0,0,0,0.2)] border border-brazflow-panel-border">
+            <div className="bg-brazflow-panel rounded-[10px] p-5 shadow-[0_4px_8px_rgba(0,0,0,0.2)] border border-brazflow-panel-border">
               <TimeSeriesChart data={timeSeriesData} />
             </div>
           </div>

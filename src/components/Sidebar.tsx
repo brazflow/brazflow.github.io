@@ -10,6 +10,7 @@ export default function Sidebar() {
   const [method, setMethod] = useState<'map' | 'coords' | 'shp' | 'kmz'>('map')
   const [lat, setLat] = useState<number>(0.0)
   const [lng, setLng] = useState<number>(0.0)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   // const [model, setModel] = useState<string>(() => localStorage.getItem('brazflow.model') || 'cudalstm-precip-aridityidx')
   const navigate = useNavigate()
 
@@ -66,77 +67,99 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="w-full min-w-0 relative bg-brazflow-sidebar p-4 text-brazflow-text md:w-[350px] md:min-w-[350px] md:sticky md:top-0 md:h-screen" aria-label="Sidebar">
-      <div className="flex justify-between items-center mb-2">
-        <BrandLogo />
-        <div>
-          <select value={locale} onChange={e => setLocale(e.target.value as any)} className="bg-transparent text-white border border-white/6 rounded px-2 py-1">
-            <option value="en-US">EN</option>
-            <option value="pt-BR">PT</option>
-          </select>
+    <>
+      {/* Mobile toggle button */}
+      <button
+        className="fixed top-4 left-4 z-50 md:hidden p-2 rounded-md bg-brazflow-panel text-brazflow-text hover:bg-brazflow-panel-hover"
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        aria-label="Toggle sidebar"
+      >
+        ☰
+      </button>
+
+      {/* Mobile overlay */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/50 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`fixed md:relative w-full md:w-[350px] md:min-w-[350px] h-screen z-40 bg-brazflow-sidebar p-4 text-brazflow-text transform transition-transform duration-300 ease-in-out ${
+        isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      } md:translate-x-0 md:sticky md:top-0 overflow-y-auto`} aria-label="Sidebar">
+        <div className="flex justify-between items-center mb-2">
+          <BrandLogo />
+          <div>
+            <select value={locale} onChange={e => setLocale(e.target.value as any)} className="bg-transparent text-white border border-white/6 rounded px-2 py-1">
+              <option value="en-US">EN</option>
+              <option value="pt-BR">PT</option>
+            </select>
+          </div>
         </div>
-      </div>
 
-      <hr className="border-white/6" />
+        <hr className="border-white/6" />
 
-      <div className="mt-3">
-        <div className="mb-2"><strong>{t('input_selection')}</strong></div>
-        <div className="grid gap-2">
-          <label className="flex gap-2 items-center"><input type="radio" checked={method === 'map'} onChange={() => setMethod('map')} /> {t('method_map')}</label>
-          <label className="flex gap-2 items-center"><input type="radio" checked={method === 'coords'} onChange={() => setMethod('coords')} /> {t('method_coords')}</label>
-          <label className="flex gap-2 items-center"><input type="radio" checked={method === 'shp'} onChange={() => setMethod('shp')} /> {t('method_shp')}</label>
-          <label className="flex gap-2 items-center"><input type="radio" checked={method === 'kmz'} onChange={() => setMethod('kmz')} /> {t('method_kmz')}</label>
+        <div className="mt-3">
+          <div className="mb-2"><strong>{t('input_selection')}</strong></div>
+          <div className="grid gap-2">
+            <label className="flex gap-2 items-center"><input type="radio" checked={method === 'map'} onChange={() => setMethod('map')} /> {t('method_map')}</label>
+            <label className="flex gap-2 items-center"><input type="radio" checked={method === 'coords'} onChange={() => setMethod('coords')} /> {t('method_coords')}</label>
+            <label className="flex gap-2 items-center"><input type="radio" checked={method === 'shp'} onChange={() => setMethod('shp')} /> {t('method_shp')}</label>
+            <label className="flex gap-2 items-center"><input type="radio" checked={method === 'kmz'} onChange={() => setMethod('kmz')} /> {t('method_kmz')}</label>
+          </div>
+
+
+          {method === 'coords' && (
+            <div className="mt-2 grid gap-2">
+              <input className="bg-transparent border border-white/10 p-2 rounded-md text-brazflow-text placeholder:text-brazflow-muted" type="number" value={lat} onChange={e => setLat(parseFloat(e.target.value))} placeholder={t('latitude_label')} />
+              <input className="bg-transparent border border-white/10 p-2 rounded-md text-brazflow-text placeholder:text-brazflow-muted" type="number" value={lng} onChange={e => setLng(parseFloat(e.target.value))} placeholder={t('longitude_label')} />
+              <button className="w-full bg-brazflow-panel text-brazflow-text rounded-md border-none py-2.5 px-3 mb-2 cursor-pointer text-center hover:bg-brazflow-panel-hover" onClick={useCoords}>{t('use_coords_button')}</button>
+            </div>
+          )}
+
+          {(method === 'map' || method === 'coords') && (
+            <>
+              {/* Model selection 
+              <div className="mt-2">
+                <div className="mb-1"><small className="text-sm text-white/60">{t('model_selection_label')}</small></div>
+                <select value={model} onChange={(e) => { try { const v = e.target.value; setModel(v); localStorage.setItem('brazflow.model', v); } catch (e) {} }} className="w-full p-2 rounded bg-transparent text-white border border-white/8">
+                  <option value="cudalstm-precip-aridityidx">cudalstm-precip-aridityidx</option>
+                  <option value="ealstm-precip-aridityidx">ealstm-precip-aridityidx</option>
+                </select>
+              </div>
+              */}
+              
+              <div className="mt-3">
+                <button className="w-full bg-brazflow-panel text-brazflow-text rounded-md border-none py-2.5 px-3 mb-2 cursor-pointer text-center hover:bg-brazflow-panel-hover" onClick={runJob}>{t('run_button_label')}</button>
+              </div>
+            </>
+          )}
+
+          {method === 'shp' && (
+            <div className="mt-4">
+              <button className="w-full bg-brazflow-panel text-brazflow-text rounded-md border-none py-2.5 px-3 mb-2 cursor-pointer text-center hover:bg-brazflow-panel-hover" onClick={() => navigate('/upload')}>{t('method_shp')}</button>
+            </div>
+          )}
+
+          {method === 'kmz' && (
+            <div className="mt-4">
+              <button className="w-full bg-brazflow-panel text-brazflow-text rounded-md border-none py-2.5 px-3 mb-2 cursor-pointer text-center hover:bg-brazflow-panel-hover" onClick={() => navigate('/upload?type=kmz')}>{t('method_kmz')}</button>
+            </div>
+          )}
+
         </div>
-
-
-        {method === 'coords' && (
-          <div className="mt-2 grid gap-2">
-            <input className="bg-transparent border border-white/10 p-2 rounded-md text-brazflow-text placeholder:text-brazflow-muted" type="number" value={lat} onChange={e => setLat(parseFloat(e.target.value))} placeholder={t('latitude_label')} />
-            <input className="bg-transparent border border-white/10 p-2 rounded-md text-brazflow-text placeholder:text-brazflow-muted" type="number" value={lng} onChange={e => setLng(parseFloat(e.target.value))} placeholder={t('longitude_label')} />
-            <button className="w-full bg-brazflow-panel text-brazflow-text rounded-md border-none py-2.5 px-3 mb-2 cursor-pointer text-center hover:bg-brazflow-panel-hover" onClick={useCoords}>{t('use_coords_button')}</button>
-          </div>
-        )}
-
-        {(method === 'map' || method === 'coords') && (
-          <>
-            {/* Model selection 
-            <div className="mt-2">
-              <div className="mb-1"><small className="text-sm text-white/60">{t('model_selection_label')}</small></div>
-              <select value={model} onChange={(e) => { try { const v = e.target.value; setModel(v); localStorage.setItem('brazflow.model', v); } catch (e) {} }} className="w-full p-2 rounded bg-transparent text-white border border-white/8">
-                <option value="cudalstm-precip-aridityidx">cudalstm-precip-aridityidx</option>
-                <option value="ealstm-precip-aridityidx">ealstm-precip-aridityidx</option>
-              </select>
-            </div>
-            */}
-            
-            <div className="mt-3">
-              <button className="w-full bg-brazflow-panel text-brazflow-text rounded-md border-none py-2.5 px-3 mb-2 cursor-pointer text-center hover:bg-brazflow-panel-hover" onClick={runJob}>{t('run_button_label')}</button>
-            </div>
-          </>
-        )}
-
-        {method === 'shp' && (
-          <div className="mt-4">
-            <button className="w-full bg-brazflow-panel text-brazflow-text rounded-md border-none py-2.5 px-3 mb-2 cursor-pointer text-center hover:bg-brazflow-panel-hover" onClick={() => navigate('/upload')}>{t('method_shp')}</button>
-          </div>
-        )}
-
-        {method === 'kmz' && (
-          <div className="mt-4">
-            <button className="w-full bg-brazflow-panel text-brazflow-text rounded-md border-none py-2.5 px-3 mb-2 cursor-pointer text-center hover:bg-brazflow-panel-hover" onClick={() => navigate('/upload?type=kmz')}>{t('method_kmz')}</button>
-          </div>
-        )}
-
-      </div>
 
       <div className="mt-4">
         <RunLookup />
       </div>
 
-      <div style={{ position: 'absolute', bottom: 16, left: 16, right: 16 }}>
+      <div className="mt-8 pt-4 border-t border-white/6">
         <small className="text-brazflow-muted">{t('copyright')}</small>
       </div>
     </aside>
+    </>
   )
 }
 
