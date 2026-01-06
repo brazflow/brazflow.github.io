@@ -13,7 +13,7 @@ export default function RunLookup() {
         <input className="run-id-input bg-transparent border border-white/8 p-2 rounded" placeholder={t('load_run_by_id')} value={id} onChange={e => setId(e.target.value)} />
       </label>
       <button className="px-5 py-2 bg-blue-600 text-white rounded"
-      onClick={() => id && nav(`/results/${encodeURIComponent(id)}}`)}>{t('go')}</button>
+      onClick={() => id && nav(`/results/${encodeURIComponent(id)}`)}>{t('go')}</button>
     </div>
   )
 }
