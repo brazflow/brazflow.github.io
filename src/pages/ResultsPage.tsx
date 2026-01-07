@@ -2,16 +2,18 @@ import { useParams } from 'react-router-dom';
 import FlowDurationCurve from '../components/FlowDurationCurve';
 import MapViewer from '../components/MapViewer';
 import TimeSeriesChart from '../components/TimeSeriesChart';
+import RoundedPanel from '../components/ui/RoundedPanel';
+import StatusDisplay from '../components/StatusDisplay';
+import LogViewer from '../components/LogViewer';
+import HydrologicalSignatures from '../components/HydrologicalSignatures';
 import { useJobStatus } from '../hooks/useJobStatus';
 import { useI18n } from '../i18n';
-import { useState } from 'react';
 
 
 export default function ResultsPage() {
   const { taskId } = useParams<{ taskId: string }>()
   const { t } = useI18n()
   const statusQ = useJobStatus(taskId || null)
-  const [isLogVisible, setIsLogVisible] = useState(false)
 
   const data = statusQ.data?.result
   const geojson = data?.catchment
@@ -56,76 +58,36 @@ export default function ResultsPage() {
         )}
       </div>
 
-      {/* Log Viewer at the top */}
-      <div className="bg-brazflow-panel rounded-[10px] shadow-[0_4px_8px_rgba(0,0,0,0.2)] border border-brazflow-panel-border mb-6 py-2.5 px-5">
-        <button onClick={() => setIsLogVisible(!isLogVisible)} className="bg-none border-none p-0 text-brazflow-text cursor-pointer font-bold">
-          {isLogVisible ? t('hide_log_details') : t('show_log_details')}
-        </button>
-        {isLogVisible && (
-          <>
-            <h3 className="mt-3 mb-2">{t('logs')}</h3>
-            <pre className="h-[300px] overflow-auto bg-brazflow-panel text-[#eee] p-2 whitespace-pre-wrap rounded">
-              {statusQ.data ? JSON.stringify(statusQ.data, null, 2) : t('polling_for_status')}
-            </pre>
-          </>
-        )}
-      </div>
+      {/* Log Viewer */}
+      <LogViewer data={statusQ.data} />
 
-      {/* Status Display - moved and improved */}
-      <div className="bg-brazflow-panel rounded-[10px] shadow-[0_4px_8px_rgba(0,0,0,0.2)] border border-brazflow-panel-border mb-6 py-2.5 px-5">
-        <div className="flex flex-col gap-2">
-          <div className="text-sm text-brazflow-muted">
-            <span className="font-semibold text-brazflow-text">Task ID:</span> {taskId}
-          </div>
-
-          <div className="flex items-center gap-x-2.5">
-            <h3 className="m-0">{t('status_label')}</h3>
-            <span className={`font-bold ${
-                statusQ.data?.status === 'completed' ? 'text-green-400' :
-                statusQ.data?.status === 'failed' ? 'text-red-500' :
-                'text-yellow-400'
-              }`}>
-              {statusQ.isLoading ? t('loading') : statusQ.data?.status?.toUpperCase()}
-            </span>
-          </div>
-          {statusQ.data?.status === 'running' && <span className="italic text-sm">{t('job_running')}</span>}
-          {statusQ.data?.status === 'failed' && <span className="text-red-500 text-sm">{t('job_failed')} {statusQ.data.error}</span>}
-        </div>
-      </div>
-
+      {/* Status Display */}
+      <StatusDisplay
+        taskId={taskId}
+        status={statusQ.data?.status}
+        isLoading={statusQ.isLoading}
+        error={statusQ.data?.error}
+      />
 
       {data ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="flex flex-col gap-6">
             {geojson && (
-              <div className="bg-brazflow-panel rounded-[10px] p-5 shadow-[0_4px_8px_rgba(0,0,0,0.2)] border border-brazflow-panel-border">
+              <RoundedPanel>
                 <MapViewer geojson={geojson} marker={marker} height={300} />
-              </div>
+              </RoundedPanel>
             )}
-            <div className="bg-brazflow-panel rounded-[10px] p-5 shadow-[0_4px_8px_rgba(0,0,0,0.2)] border border-brazflow-panel-border">
+            <RoundedPanel>
               <FlowDurationCurve data={runoffData} />
-            </div>
+            </RoundedPanel>
           </div>
           <div className="flex flex-col gap-6">
             {metrics && (
-              <div className="bg-brazflow-panel rounded-[10px] p-5 shadow-[0_4px_8px_rgba(0,0,0,0.2)] border border-brazflow-panel-border">
-                <h3>{t('hydrological_signatures')}</h3>
-                <div className="flex gap-3 flex-wrap">
-                  {Object.entries(metrics).map(([name, value]: any) => (
-                    <div key={name} className="flex-[1_1_120px] bg-brazflow-panel p-3 rounded-lg">
-                      <div className="text-xs text-[#bbb]">{name.replace(/_/g, ' ').toUpperCase()}</div>
-                      <div className="text-xl font-bold">
-                        {typeof value === 'number' ? value.toFixed(2) : String(value)}
-                        <span className="text-xs text-[#bbb] ml-1">{signatureUnits[name]}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <HydrologicalSignatures metrics={metrics} signatureUnits={signatureUnits} />
             )}
-            <div className="bg-brazflow-panel rounded-[10px] p-5 shadow-[0_4px_8px_rgba(0,0,0,0.2)] border border-brazflow-panel-border">
+            <RoundedPanel>
               <TimeSeriesChart data={timeSeriesData} />
-            </div>
+            </RoundedPanel>
           </div>
         </div>
       ) : (
