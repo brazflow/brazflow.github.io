@@ -9,6 +9,13 @@ export interface GeoJson {
   coordinates: number[][][];
 }
 
+export interface DistributionFit {
+  distribution_name: string;
+  args: number[];
+  pvalue: number;
+  statistic: number;
+}
+
 export interface Signatures {
   mean_q: number;
   q1: number;
@@ -16,6 +23,7 @@ export interface Signatures {
   q90: number;
   q99: number;
   q710: number;
+  q710_bestfit: DistributionFit
 }
 
 export interface ResultTask {

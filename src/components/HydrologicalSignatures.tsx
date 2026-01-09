@@ -29,9 +29,13 @@ export default function HydrologicalSignatures({ metrics, signatureUnits }: Hydr
     <RoundedPanel>
       <h3>{t('hydrological_signatures')}</h3>
       <div className="flex gap-3 flex-wrap">
-        {Object.entries(metrics).map(([name, value]) => (
-          <MetricCard key={name} name={name} value={value} unit={signatureUnits[name]} />
-        ))}
+        {Object.entries(metrics).map(([name, value]) => {
+          if (name == "q710_bestfit") {
+            name = `q710 ${value.distribution_name} pvalue`
+            value = value.pvalue
+          }
+          return <MetricCard key={name} name={name} value={value} unit={signatureUnits[name]} />
+        })}
       </div>
     </RoundedPanel>
   );
