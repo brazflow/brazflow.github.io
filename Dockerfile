@@ -8,6 +8,8 @@ COPY package*.json package-lock.json /app/
 RUN npm install
 
 COPY ./ /app/
+ARG VITE_API_URL=/tailnet
+ARG NODE_ENV=production
 
 RUN npm run build
 
