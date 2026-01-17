@@ -39,8 +39,14 @@ jobs:
         run: npm ci
       - name: Create env file
         run: |
-             touch .env
-             echo VITE_API_URL=/herosserver >> .env
+             touch .env.production
+             echo "VITE_API_BASE=${{ vars.VITE_API_BASE }}" >> .env.production
+      - name: Verify env file
+        run: |
+             echo "cat .env.production"
+             cat .env.production
+             echo "ls -a ."
+             ls -a .
       - name: Build
         run: npm run build
       - name: Setup Pages
