@@ -5,7 +5,7 @@ import type {
   ResultTask,
 } from '../utils/types'
 
-export const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000'
+export const API_BASE = import.meta.env.VITE_API_BASE 
 
 export async function launchPredictTask(payload: PredictRequest): Promise<TaskResponse> {
   const res = await fetch(`${API_BASE}/api/v2/predict/launch`, {
